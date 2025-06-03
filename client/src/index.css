@@ -1,0 +1,193 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 0%;
+  --foreground: 120 100% 50%;
+  --muted: 120 100% 15%;
+  --muted-foreground: 120 50% 70%;
+  --popover: 0 0% 5%;
+  --popover-foreground: 120 100% 50%;
+  --card: 0 0% 5%;
+  --card-foreground: 120 100% 50%;
+  --border: 120 100% 25%;
+  --input: 0 0% 5%;
+  --primary: 120 100% 50%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 0 0% 10%;
+  --secondary-foreground: 120 100% 50%;
+  --accent: 0 0% 10%;
+  --accent-foreground: 120 100% 50%;
+  --destructive: 0 84% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --ring: 120 100% 50%;
+  --radius: 0.5rem;
+  
+  /* Custom hacker theme colors */
+  --matrix-green: 120 100% 50%;
+  --matrix-dark-green: 120 100% 40%;
+  --matrix-red: 0 100% 50%;
+  --terminal-black: 0 0% 0%;
+  --terminal-dark: 0 0% 5%;
+  --terminal-gray: 0 0% 15%;
+}
+
+.dark {
+  --background: 0 0% 0%;
+  --foreground: 120 100% 50%;
+  --muted: 120 100% 15%;
+  --muted-foreground: 120 50% 70%;
+  --popover: 0 0% 5%;
+  --popover-foreground: 120 100% 50%;
+  --card: 0 0% 5%;
+  --card-foreground: 120 100% 50%;
+  --border: 120 100% 25%;
+  --input: 0 0% 5%;
+  --primary: 120 100% 50%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 0 0% 10%;
+  --secondary-foreground: 120 100% 50%;
+  --accent: 0 0% 10%;
+  --accent-foreground: 120 100% 50%;
+  --destructive: 0 84% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --ring: 120 100% 50%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-black text-green-500 font-mono antialiased;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    background: #000000;
+    color: #00FF00;
+  }
+}
+
+@layer components {
+  .terminal-border {
+    @apply border border-green-500;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+  }
+  
+  .matrix-bg {
+    background: linear-gradient(45deg, #000000 0%, #0a0a0a 50%, #000000 100%);
+  }
+  
+  .glitch-text {
+    position: relative;
+    animation: glitch 2s infinite;
+  }
+  
+  .glitch-text::before,
+  .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .glitch-text::before {
+    animation: glitch 2s infinite;
+    color: #FF0040;
+    z-index: -1;
+  }
+  
+  .glitch-text::after {
+    animation: glitch 2s infinite reverse;
+    color: #00FFFF;
+    z-index: -2;
+  }
+  
+  .neon-glow {
+    box-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00, 0 0 20px #00FF00;
+    animation: neon-pulse 2s ease-in-out infinite alternate;
+  }
+  
+  .terminal-input {
+    @apply bg-black border border-green-400 text-green-500 font-mono;
+  }
+  
+  .terminal-input:focus {
+    @apply outline-none border-green-500;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  }
+  
+  .matrix-rain {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.1;
+  }
+  
+  .course-card {
+    transition: all 0.3s ease;
+  }
+  
+  .course-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+  }
+  
+  .cart-pulse {
+    animation: cart-pulse 0.5s ease-in-out;
+  }
+}
+
+@keyframes glitch {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+}
+
+@keyframes neon-pulse {
+  from { box-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00, 0 0 15px #00FF00; }
+  to { box-shadow: 0 0 10px #00FF00, 0 0 20px #00FF00, 0 0 30px #00FF00; }
+}
+
+@keyframes cart-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes terminal-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.terminal-cursor::after {
+  content: '_';
+  animation: terminal-blink 1s infinite;
+  color: #00FF00;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00FF00;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00CC00;
+}
