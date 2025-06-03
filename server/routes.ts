@@ -1,17 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import Stripe from "stripe";
 import { storage } from "./storage";
 import { insertCourseSchema, insertCartItemSchema } from "@shared/schema";
 import { z } from "zod";
-
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
-}
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16",
-});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -168,36 +159,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Stripe payment route for one-time payments
-  app.post("/api/create-payment-intent", async (req, res) => {
+  // Generate PhonePe payment details
+  app.post("/api/generate-payment", async (req, res) => {
     try {
-      const { amount, sessionId } = req.body;
+      const { sessionId } = req.body;
       
-      if (!amount) {
-        return res.status(400).json({ message: "Amount is required" });
-      }
-
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(parseFloat(amount) * 100), // Convert to cents
-        currency: "usd",
-        metadata: {
-          sessionId: sessionId || 'anonymous'
-        }
-      });
-
-      res.json({ clientSecret: paymentIntent.client_secret });
-    } catch (error: any) {
-      res.status(500).json({ message: "Error creating payment intent: " + error.message });
-    }
-  });
-
-  // Complete order after successful payment
-  app.post("/api/complete-order", async (req, res) => {
-    try {
-      const { sessionId, paymentIntentId } = req.body;
-      
-      if (!sessionId || !paymentIntentId) {
-        return res.status(400).json({ message: "Session ID and Payment Intent ID are required" });
+      if (!sessionId) {
+        return res.status(400).json({ message: "Session ID is required" });
       }
 
       // Get cart items
@@ -210,25 +178,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Calculate total
       const totalAmount = cartItems.reduce((sum, item) => sum + parseFloat(item.course.price), 0);
       
-      // Create order
+      // Generate order ID
+      const orderId = 'ORD_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      
+      // Create pending order
       const order = await storage.createOrder({
-        userId: null, // Anonymous for now
+        userId: null,
         courseIds: cartItems.map(item => item.courseId),
         totalAmount: totalAmount.toString(),
-        stripePaymentIntentId: paymentIntentId,
-        status: "completed"
+        stripePaymentIntentId: orderId, // Using this field for order ID
+        status: "pending_payment"
       });
-
-      // Clear cart
-      await storage.clearCart(sessionId);
 
       res.json({ 
-        message: "Order completed successfully", 
-        order,
-        courses: cartItems.map(item => item.course)
+        orderId,
+        totalAmount: totalAmount.toFixed(2),
+        courses: cartItems.map(item => ({
+          title: item.course.title,
+          price: item.course.price
+        })),
+        qrCodeUrl: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzAwMCIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iOTAiIGZpbGw9IiMwMEZGMDAiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlBob25lUGU8L3RleHQ+CiAgPHRleHQgeD0iMTAwIiB5PSIxMTAiIGZpbGw9IiMwMEZGMDAiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlFSIENvZGU8L3RleHQ+CiAgPHRleHQgeD0iMTAwIiB5PSIxMzAiIGZpbGw9IiMwMEZGMDAiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U2NhbiB0byBQYXk8L3RleHQ+Cjwvc3ZnPgo="
       });
     } catch (error: any) {
-      res.status(500).json({ message: "Error completing order: " + error.message });
+      res.status(500).json({ message: "Error generating payment: " + error.message });
+    }
+  });
+
+  // Verify UTR and complete order
+  app.post("/api/verify-payment", async (req, res) => {
+    try {
+      const { orderId, utrNumber, sessionId } = req.body;
+      
+      if (!orderId || !utrNumber || !sessionId) {
+        return res.status(400).json({ message: "Order ID, UTR number, and Session ID are required" });
+      }
+
+      // Update order status to pending verification
+      const orders = Array.from((storage as any).orders.values());
+      const order = orders.find((o: any) => o.stripePaymentIntentId === orderId);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      await storage.updateOrderStatus(order.id, "pending_verification");
+
+      // Get cart items for WhatsApp message
+      const cartItems = await storage.getCartItems(sessionId);
+      const courseNames = cartItems.map(item => item.course.title).join(', ');
+      
+      // Generate WhatsApp message
+      const whatsappMessage = encodeURIComponent(
+        `🔐 CYBER ACADEMY - Payment Verification\n\n` +
+        `Order ID: ${orderId}\n` +
+        `UTR: ${utrNumber}\n` +
+        `Courses: ${courseNames}\n` +
+        `Amount: ₹${order.totalAmount}\n\n` +
+        `Please verify this payment and provide course access.`
+      );
+      
+      const whatsappUrl = `https://wa.me/918000000000?text=${whatsappMessage}`;
+
+      res.json({ 
+        message: "Payment submitted for verification", 
+        whatsappUrl,
+        orderId
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error verifying payment: " + error.message });
     }
   });
 

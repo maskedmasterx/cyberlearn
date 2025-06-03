@@ -2,8 +2,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/hooks/use-cart';
-import { useToast } = from '@/hooks/use-toast';
-import { Download, Check } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { Download, Check, Terminal } from 'lucide-react';
 import { useState } from 'react';
 import type { Course } from '@shared/schema';
 

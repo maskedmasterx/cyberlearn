@@ -1,76 +1,80 @@
-import { useStripe, Elements, PaymentElement, useElements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from '@/hooks/use-cart';
-import { Terminal, ArrowLeft, CreditCard } from 'lucide-react';
-
-if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
-  throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
-}
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+import { Terminal, ArrowLeft, QrCode, Smartphone, MessageCircle } from 'lucide-react';
 
 const CheckoutForm = () => {
-  const stripe = useStripe();
-  const elements = useElements();
   const { toast } = useToast();
   const { cartItems, sessionId, clearCart } = useCart();
   const [, setLocation] = useLocation();
+  const [paymentData, setPaymentData] = useState<any>(null);
+  const [utrNumber, setUtrNumber] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [step, setStep] = useState(1); // 1: Generate payment, 2: Show QR, 3: UTR verification
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      generatePayment();
+    }
+  }, [cartItems]);
+
+  const generatePayment = async () => {
+    try {
+      const response = await apiRequest("POST", "/api/generate-payment", { sessionId });
+      const data = await response.json();
+      setPaymentData(data);
+      setStep(2);
+    } catch (error: any) {
+      toast({
+        title: "PAYMENT_GENERATION_FAILED.exe",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUtrSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!stripe || !elements) {
+    if (!utrNumber.trim()) {
+      toast({
+        title: "UTR_REQUIRED.exe",
+        description: "Please enter UTR number",
+        variant: "destructive",
+      });
       return;
     }
 
     setIsProcessing(true);
 
     try {
-      const { error } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/`,
-        },
-        redirect: 'if_required'
+      const response = await apiRequest("POST", "/api/verify-payment", {
+        orderId: paymentData.orderId,
+        utrNumber: utrNumber.trim(),
+        sessionId
       });
 
-      if (error) {
-        toast({
-          title: "PAYMENT_FAILED.exe",
-          description: error.message,
-          variant: "destructive",
-        });
-      } else {
-        // Payment succeeded, complete the order
-        const paymentIntent = await stripe.retrievePaymentIntent(
-          new URLSearchParams(window.location.search).get('payment_intent_client_secret') || ''
-        );
+      const data = await response.json();
+      
+      // Open WhatsApp
+      window.open(data.whatsappUrl, '_blank');
+      
+      await clearCart();
+      
+      toast({
+        title: "VERIFICATION_INITIATED.exe",
+        description: "Payment verification sent. You'll receive course access after verification.",
+      });
 
-        if (paymentIntent.paymentIntent) {
-          await apiRequest("POST", "/api/complete-order", {
-            sessionId,
-            paymentIntentId: paymentIntent.paymentIntent.id
-          });
-
-          await clearCart();
-          
-          toast({
-            title: "PAYMENT_SUCCESSFUL.exe",
-            description: "Access credentials will be sent to your secure channel.",
-          });
-
-          setLocation('/');
-        }
-      }
+      setLocation('/');
     } catch (error: any) {
       toast({
-        title: "TRANSACTION_ERROR.exe",
+        title: "VERIFICATION_FAILED.exe",
         description: error.message,
         variant: "destructive",
       });
@@ -97,12 +101,12 @@ const CheckoutForm = () => {
             
             <h1 className="text-3xl font-bold text-green-500 mb-4 flex items-center">
               <Terminal className="w-8 h-8 mr-3" />
-              SECURE_CHECKOUT.exe
+              SECURE_PAYMENT.exe
             </h1>
             
             <pre className="text-green-400 text-sm mb-6">
-{`┌─[ PAYMENT_PROCESSOR ]────────────────────────────────────┐
-│ Initializing secure payment protocol...                 │
+{`┌─[ PHONEPE_PAYMENT_GATEWAY ]──────────────────────────────┐
+│ Initializing secure UPI payment protocol...             │
 │ Encryption: AES-256 | Status: ACTIVE                   │
 └─────────────────────────────────────────────────────────┘`}
             </pre>
@@ -118,53 +122,107 @@ const CheckoutForm = () => {
                     <div className="font-bold text-green-500">{item.course.title}</div>
                     <div className="text-sm text-green-400">{item.course.difficulty} • {item.course.duration}</div>
                   </div>
-                  <div className="text-green-500 font-bold">${item.course.price}</div>
+                  <div className="text-green-500 font-bold">₹{item.course.price}</div>
                 </div>
               ))}
             </div>
             
             <div className="mt-4 p-4 terminal-border bg-black flex justify-between items-center">
               <span className="text-xl font-bold text-green-500">TOTAL_AMOUNT:</span>
-              <span className="text-2xl font-bold text-green-500">${total.toFixed(2)}</span>
+              <span className="text-2xl font-bold text-green-500">₹{total.toFixed(2)}</span>
             </div>
           </div>
 
-          {/* Payment Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="terminal-border p-4 bg-black">
-              <h3 className="text-lg font-bold text-green-500 mb-4">PAYMENT_DETAILS.form</h3>
-              <PaymentElement 
-                options={{
-                  appearance: {
-                    theme: 'night',
-                    variables: {
-                      colorPrimary: '#00FF00',
-                      colorBackground: '#000000',
-                      colorText: '#00FF00',
-                      colorDanger: '#FF0040',
-                      fontFamily: 'monospace',
-                      borderRadius: '4px',
-                    }
-                  }
-                }}
-              />
-            </div>
-            
-            <Button
-              type="submit"
-              disabled={!stripe || !elements || isProcessing}
-              className="w-full bg-green-500 text-black py-4 font-bold text-lg hover:bg-green-400 transition-all neon-glow"
-            >
-              <CreditCard className="w-5 h-5 mr-2" />
-              {isProcessing ? 'PROCESSING_PAYMENT.exe...' : 'COMPLETE_PURCHASE.exe'}
-            </Button>
-          </form>
+          {step === 2 && paymentData && (
+            <>
+              {/* QR Code Section */}
+              <div className="mb-8">
+                <h3 className="text-lg font-bold text-green-500 mb-4 flex items-center">
+                  <QrCode className="w-5 h-5 mr-2" />
+                  SCAN_QR_TO_PAY.exe
+                </h3>
+                
+                <div className="terminal-border p-6 bg-black text-center">
+                  <img 
+                    src={paymentData.qrCodeUrl} 
+                    alt="PhonePe QR Code" 
+                    className="w-48 h-48 mx-auto mb-4 terminal-border"
+                  />
+                  
+                  <div className="space-y-2 text-green-400">
+                    <div className="flex items-center justify-center">
+                      <Smartphone className="w-4 h-4 mr-2" />
+                      <span>Scan with any UPI app</span>
+                    </div>
+                    <div className="text-sm">Order ID: {paymentData.orderId}</div>
+                    <div className="text-lg font-bold text-green-500">Amount: ₹{paymentData.totalAmount}</div>
+                  </div>
+                </div>
+
+                <div className="mt-4 text-center">
+                  <Button
+                    onClick={() => setStep(3)}
+                    className="bg-green-500 text-black font-bold hover:bg-green-400 transition-colors"
+                  >
+                    PAYMENT_COMPLETED.exe
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+
+          {step === 3 && (
+            <>
+              {/* UTR Verification */}
+              <form onSubmit={handleUtrSubmit} className="space-y-6">
+                <div className="terminal-border p-4 bg-black">
+                  <h3 className="text-lg font-bold text-green-500 mb-4">UTR_VERIFICATION.form</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-green-400 text-sm mb-2">
+                        Enter UTR Number (Transaction ID):
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder="12-digit UTR number"
+                        value={utrNumber}
+                        onChange={(e) => setUtrNumber(e.target.value)}
+                        className="terminal-input"
+                        required
+                      />
+                      <div className="text-xs text-green-400 mt-1">
+                        Check your UPI app for the 12-digit transaction reference number
+                      </div>
+                    </div>
+                    
+                    <div className="text-sm text-green-400">
+                      <div className="mb-2">Order Details:</div>
+                      <div>Order ID: {paymentData?.orderId}</div>
+                      <div>Amount: ₹{paymentData?.totalAmount}</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <Button
+                  type="submit"
+                  disabled={isProcessing}
+                  className="w-full bg-green-500 text-black py-4 font-bold text-lg hover:bg-green-400 transition-all neon-glow"
+                >
+                  <MessageCircle className="w-5 h-5 mr-2" />
+                  {isProcessing ? 'VERIFYING_PAYMENT.exe...' : 'SEND_FOR_VERIFICATION.exe'}
+                </Button>
+              </form>
+            </>
+          )}
 
           <div className="mt-6 text-center">
             <pre className="text-green-400 text-xs">
-{`┌─[ SECURITY_NOTICE ]──────────────────────────────────────┐
-│ All transactions are encrypted and processed securely   │
-│ Your payment information is never stored on our servers │
+{`┌─[ PAYMENT_PROCESS ]──────────────────────────────────────┐
+│ 1. Scan QR code with any UPI app (PhonePe/GPay/Paytm)  │
+│ 2. Complete payment and note the UTR number             │
+│ 3. Enter UTR for verification via WhatsApp              │
+│ 4. Get course access after manual verification          │
 └─────────────────────────────────────────────────────────┘`}
             </pre>
           </div>
@@ -175,8 +233,7 @@ const CheckoutForm = () => {
 };
 
 export default function Checkout() {
-  const [clientSecret, setClientSecret] = useState("");
-  const { cartItems, sessionId } = useCart();
+  const { cartItems } = useCart();
   const [, setLocation] = useLocation();
 
   useEffect(() => {
@@ -184,37 +241,18 @@ export default function Checkout() {
       setLocation('/');
       return;
     }
+  }, [cartItems, setLocation]);
 
-    const total = cartItems.reduce((sum, item) => sum + parseFloat(item.course.price), 0);
-
-    apiRequest("POST", "/api/create-payment-intent", { 
-      amount: total.toFixed(2),
-      sessionId 
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setClientSecret(data.clientSecret);
-      })
-      .catch((error) => {
-        console.error('Error creating payment intent:', error);
-        setLocation('/');
-      });
-  }, [cartItems, sessionId, setLocation]);
-
-  if (!clientSecret) {
+  if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-black text-green-500 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full mx-auto mb-4" />
-          <div className="text-green-400">INITIALIZING_PAYMENT_SYSTEM.exe</div>
+          <div className="text-green-400">REDIRECTING_TO_ACADEMY.exe</div>
         </div>
       </div>
     );
   }
 
-  return (
-    <Elements stripe={stripePromise} options={{ clientSecret }}>
-      <CheckoutForm />
-    </Elements>
-  );
+  return <CheckoutForm />;
 }

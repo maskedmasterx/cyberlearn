@@ -173,9 +173,9 @@ export default function Home() {
               </h2>
               
               <div className="text-xl mb-8 font-mono">
-                <div>> Master elite cybersecurity skills</div>
-                <div>> Learn from real-world hackers</div>
-                <div>> Become the security expert companies need</div>
+                <div>{'>'} Master elite cybersecurity skills</div>
+                <div>{'>'} Learn from real-world hackers</div>
+                <div>{'>'} Become the security expert companies need</div>
               </div>
               
               <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
