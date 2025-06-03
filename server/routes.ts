@@ -215,7 +215,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Update order status to pending verification
       const orders = Array.from((storage as any).orders.values());
-      const order = orders.find((o: any) => o.stripePaymentIntentId === orderId);
+      const order = orders.find((o: any) => o.stripePaymentIntentId === orderId) as any;
       
       if (!order) {
         return res.status(404).json({ message: "Order not found" });

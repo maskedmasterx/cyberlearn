@@ -86,7 +86,7 @@ export default function CourseCard({ course }: CourseCardProps) {
         <div className="space-y-2 mb-6 text-sm">
           {course.features.slice(0, 3).map((feature, index) => (
             <div key={index} className="flex items-center">
-              <span className="text-green-500 mr-2">></span>
+              <span className="text-green-500 mr-2">{'>'}</span>
               <span className="text-green-400">{feature}</span>
             </div>
           ))}

@@ -147,8 +147,9 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
     const user: User = { 
-      ...insertUser, 
       id,
+      username: insertUser.username,
+      password: insertUser.password,
       email: insertUser.email || null,
       isAdmin: insertUser.isAdmin || null
     };
@@ -166,7 +167,14 @@ export class MemStorage implements IStorage {
 
   async createCourse(insertCourse: InsertCourse): Promise<Course> {
     const id = this.currentCourseId++;
-    const course: Course = { ...insertCourse, id };
+    const course: Course = { 
+      ...insertCourse, 
+      id,
+      imageUrl: insertCourse.imageUrl || null,
+      tags: insertCourse.tags || null,
+      features: insertCourse.features || null,
+      isActive: insertCourse.isActive !== undefined ? insertCourse.isActive : true
+    };
     this.courses.set(id, course);
     return course;
   }
@@ -189,6 +197,9 @@ export class MemStorage implements IStorage {
     const order: Order = { 
       ...insertOrder, 
       id,
+      status: insertOrder.status || null,
+      userId: insertOrder.userId || null,
+      stripePaymentIntentId: insertOrder.stripePaymentIntentId || null,
       createdAt: new Date().toISOString()
     };
     this.orders.set(id, order);
