@@ -35,17 +35,33 @@ export default function AdminPanel({ isOpen, onClose }: AdminPanelProps) {
 
   const { data: stats } = useQuery({
     queryKey: ['/api/admin/stats'],
+    queryFn: () => fetch('http://localhost:3001/api/admin/stats', {
+      headers: { 
+        'username': username,
+        'password': password
+      }
+    }).then(res => res.json()),
     enabled: isAuthenticated,
   });
 
   const { data: courses = [] } = useQuery<Course[]>({
     queryKey: ['/api/courses'],
+    queryFn: () => fetch('http://localhost:3001/api/courses', {
+      headers: { 
+        'username': username,
+        'password': password
+      }
+    }).then(res => res.json()),
     enabled: isAuthenticated,
   });
 
   const loginMutation = useMutation({
     mutationFn: (credentials: { username: string; password: string }) =>
-      apiRequest('POST', '/api/admin/login', credentials),
+      fetch('http://localhost:3001/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials)
+      }).then(res => res.json()),
     onSuccess: () => {
       setIsAuthenticated(true);
       toast({

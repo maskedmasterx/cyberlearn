@@ -32,55 +32,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create new course (admin only)
-  app.post("/api/courses", async (req, res) => {
-    try {
-      const courseData = insertCourseSchema.parse(req.body);
-      const course = await storage.createCourse(courseData);
-      res.status(201).json(course);
-    } catch (error: any) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid course data", errors: error.errors });
-      }
-      res.status(500).json({ message: "Error creating course: " + error.message });
-    }
-  });
-
-  // Update course (admin only)
-  app.put("/api/courses/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const courseData = insertCourseSchema.partial().parse(req.body);
-      const course = await storage.updateCourse(id, courseData);
-      
-      if (!course) {
-        return res.status(404).json({ message: "Course not found" });
-      }
-      
-      res.json(course);
-    } catch (error: any) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid course data", errors: error.errors });
-      }
-      res.status(500).json({ message: "Error updating course: " + error.message });
-    }
-  });
-
-  // Delete course (admin only)
-  app.delete("/api/courses/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const deleted = await storage.deleteCourse(id);
-      
-      if (!deleted) {
-        return res.status(404).json({ message: "Course not found" });
-      }
-      
-      res.json({ message: "Course deleted successfully" });
-    } catch (error: any) {
-      res.status(500).json({ message: "Error deleting course: " + error.message });
-    }
-  });
+  
 
   // Cart operations
   app.post("/api/cart", async (req, res) => {
@@ -135,29 +87,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin authentication
-  app.post("/api/admin/login", async (req, res) => {
-    try {
-      const { username, password } = req.body;
-      
-      if (!username || !password) {
-        return res.status(400).json({ message: "Username and password are required" });
-      }
-
-      const user = await storage.getUserByUsername(username);
-      
-      if (!user || user.password !== password || !user.isAdmin) {
-        return res.status(401).json({ message: "Invalid credentials" });
-      }
-
-      res.json({ 
-        message: "Authentication successful", 
-        user: { id: user.id, username: user.username, isAdmin: user.isAdmin }
-      });
-    } catch (error: any) {
-      res.status(500).json({ message: "Error during authentication: " + error.message });
-    }
-  });
+  
 
   // Generate PhonePe payment details
   app.post("/api/generate-payment", async (req, res) => {
@@ -249,21 +179,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get system stats for admin
-  app.get("/api/admin/stats", async (req, res) => {
-    try {
-      const courses = await storage.getAllCourses();
-      
-      res.json({
-        totalCourses: courses.length,
-        activeStudents: 1337, // Mock data for demo
-        monthlyRevenue: "$45,670", // Mock data for demo
-        uptime: "99.9%"
-      });
-    } catch (error: any) {
-      res.status(500).json({ message: "Error fetching stats: " + error.message });
-    }
-  });
+  
 
   const httpServer = createServer(app);
   return httpServer;
