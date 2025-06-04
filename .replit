@@ -41,5 +41,9 @@ task = "shell.exec"
 args = "npx tsx server/admin-server.ts"
 
 [[ports]]
+localPort = 3001
+externalPort = 3001
+
+[[ports]]
 localPort = 5000
 externalPort = 80
