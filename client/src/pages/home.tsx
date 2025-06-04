@@ -132,16 +132,6 @@ export default function Home() {
                 <ShoppingCart className="w-4 h-4 mr-1" />
                 Cart ({cartItems.length})
               </Button>
-              <Button
-                onClick={() => {
-                  setIsAdminOpen(true);
-                  setIsMobileMenuOpen(false);
-                }}
-                className="bg-green-600 text-black hover:bg-green-500"
-                size="sm"
-              >
-                Admin
-              </Button>
             </div>
           </div>
         </div>
