@@ -9,6 +9,66 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// Serve simple admin interface
+app.get("/", (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Admin Server - CyberSec Academy</title>
+        <style>
+            body { 
+                background: #000; 
+                color: #00ff00; 
+                font-family: 'Courier New', monospace; 
+                padding: 20px; 
+                text-align: center;
+            }
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                border: 2px solid #00ff00;
+                padding: 30px;
+                margin-top: 50px;
+            }
+            h1 { color: #00ff00; }
+            a { 
+                color: #00ff00; 
+                text-decoration: none; 
+                border: 1px solid #00ff00;
+                padding: 10px 20px;
+                display: inline-block;
+                margin: 10px;
+            }
+            a:hover { background: #00ff00; color: #000; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🔐 ADMIN SERVER ACTIVE</h1>
+            <p>Admin server is running on port 3001</p>
+            <p>API endpoints are available at:</p>
+            <ul style="text-align: left;">
+                <li>POST /api/admin/login</li>
+                <li>GET /api/admin/stats</li>
+                <li>GET /api/courses</li>
+                <li>POST /api/courses</li>
+                <li>DELETE /api/courses/:id</li>
+            </ul>
+            <hr style="border-color: #00ff00; margin: 30px 0;">
+            <p><strong>Access the full admin panel through the main application:</strong></p>
+            <a href="https://${req.get('host').replace(':3001', ':5000')}" target="_blank">
+                🚀 Open Main Application (Port 5000)
+            </a>
+            <p style="margin-top: 20px; font-size: 12px;">
+                Click the ShieldX icon in the main app to access the admin panel
+            </p>
+        </div>
+    </body>
+    </html>
+  `);
+});
+
 // Admin authentication middleware
 const authenticateAdmin = async (req: any, res: any, next: any) => {
   const { username, password } = req.headers;
