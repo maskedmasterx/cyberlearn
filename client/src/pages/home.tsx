@@ -82,14 +82,6 @@ export default function Home() {
                     </span>
                   )}
                 </Button>
-                <Button
-                  onClick={() => setIsAdminOpen(true)}
-                  className="bg-green-600 text-black hover:bg-green-500 transition-colors"
-                  size="sm"
-                >
-                  <ShieldX className="w-4 h-4 mr-1" />
-                  Admin
-                </Button>
               </div>
             </div>
             

@@ -197,7 +197,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           title: item.course.title,
           price: item.course.price
         })),
-        qrCodeUrl: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzAwMCIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iOTAiIGZpbGw9IiMwMEZGMDAiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlBob25lUGU8L3RleHQ+CiAgPHRleHQgeD0iMTAwIiB5PSIxMTAiIGZpbGw9IiMwMEZGMDAiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlFSIENvZGU8L3RleHQ+CiAgPHRleHQgeD0iMTAwIiB5PSIxMzAiIGZpbGw9IiMwMEZGMDAiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U2NhbiB0byBQYXk8L3RleHQ+Cjwvc3ZnPgo="
+        qrCodeUrl: "/assets/qr-code.jpg"
       });
     } catch (error: any) {
       res.status(500).json({ message: "Error generating payment: " + error.message });

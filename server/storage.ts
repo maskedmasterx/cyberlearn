@@ -55,7 +55,7 @@ export class MemStorage implements IStorage {
       {
         title: "Advanced Penetration Testing",
         description: "Master the fundamentals of ethical hacking, penetration testing, and vulnerability assessment. Learn to think like a black hat to defend like a white hat.",
-        price: "299.00",
+        price: "24999.00",
         duration: "8 weeks",
         difficulty: "ADVANCED",
         imageUrl: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300",
@@ -66,7 +66,7 @@ export class MemStorage implements IStorage {
       {
         title: "Malware Development & Analysis",
         description: "Deep dive into advanced penetration testing methodologies, exploit development, and red team operations. Real-world scenarios and live targets.",
-        price: "499.00",
+        price: "41999.00",
         duration: "12 weeks",
         difficulty: "EXPERT",
         imageUrl: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300",
@@ -77,7 +77,7 @@ export class MemStorage implements IStorage {
       {
         title: "Digital Forensics & Incident Response",
         description: "Master digital forensics, incident response, and malware analysis. Learn to investigate cyber crimes and recover critical evidence.",
-        price: "399.00",
+        price: "33999.00",
         duration: "10 weeks",
         difficulty: "EXPERT",
         imageUrl: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300",
@@ -88,7 +88,7 @@ export class MemStorage implements IStorage {
       {
         title: "Web Application Hacking",
         description: "Learn to exploit web applications using advanced techniques. Master OWASP Top 10, API security, and authentication bypass methods.",
-        price: "349.00",
+        price: "29999.00",
         duration: "6 weeks",
         difficulty: "INTERMEDIATE",
         imageUrl: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300",
@@ -99,7 +99,7 @@ export class MemStorage implements IStorage {
       {
         title: "Wireless Network Exploitation",
         description: "Master wireless security testing, WPA/WPA2 cracking, and radio frequency analysis. Learn to exploit wireless networks professionally.",
-        price: "279.00",
+        price: "23999.00",
         duration: "5 weeks",
         difficulty: "ADVANCED",
         imageUrl: "https://images.unsplash.com/photo-1580927752452-89d86da3fa0a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300",
@@ -110,7 +110,7 @@ export class MemStorage implements IStorage {
       {
         title: "Social Engineering Mastery",
         description: "Learn the art of psychological manipulation, OSINT reconnaissance, and physical infiltration techniques used by elite hackers.",
-        price: "199.00",
+        price: "16999.00",
         duration: "4 weeks",
         difficulty: "BEGINNER",
         imageUrl: "https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300",
