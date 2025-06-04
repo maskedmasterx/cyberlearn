@@ -94,7 +94,7 @@ export default function CourseCard({ course }: CourseCardProps) {
       )}
       
       <div className="flex justify-between items-center mb-4">
-        <span className="text-2xl font-bold text-green-500">${course.price}</span>
+        <span className="text-2xl font-bold text-green-500">₹{course.price}</span>
         <span className="text-gray-400">{course.duration}</span>
       </div>
       
