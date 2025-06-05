@@ -142,6 +142,35 @@
   .cart-pulse {
     animation: cart-pulse 0.5s ease-in-out;
   }
+
+  /* Mobile optimizations */
+  @media (max-width: 768px) {
+    .glitch-text {
+      font-size: 2.5rem !important;
+    }
+    
+    .course-card:hover {
+      transform: none;
+    }
+    
+    .matrix-rain {
+      opacity: 0.05;
+    }
+    
+    .neon-glow {
+      box-shadow: 0 0 3px #00FF00, 0 0 6px #00FF00, 0 0 10px #00FF00;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .glitch-text {
+      font-size: 2rem !important;
+    }
+    
+    .terminal-border {
+      box-shadow: 0 0 5px rgba(0, 255, 0, 0.2);
+    }
+  }
 }
 
 @keyframes glitch {

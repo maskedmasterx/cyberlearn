@@ -138,11 +138,11 @@ export default function Home() {
       )}
 
       {/* Hero Section */}
-      <section className="relative z-10 py-20 matrix-bg">
+      <section className="relative z-10 py-12 md:py-20 matrix-bg">
         <div className="container mx-auto px-4 text-center">
           <div className="relative z-10">
-            <Card className="terminal-border p-8 max-w-4xl mx-auto bg-black/80">
-              <pre className="text-left text-sm mb-6 text-green-400">
+            <Card className="terminal-border p-4 md:p-8 max-w-4xl mx-auto bg-black/80">
+              <pre className="text-left text-xs md:text-sm mb-4 md:mb-6 text-green-400 overflow-x-auto">
 {`┌─────────────────────────────────────────────────────────────┐
 │  > ACCESSING ELITE CYBERSECURITY TRAINING PLATFORM...      │
 │  > CONNECTION ESTABLISHED                                   │
@@ -150,27 +150,27 @@ export default function Home() {
 └─────────────────────────────────────────────────────────────┘`}
               </pre>
               
-              <h2 className="text-5xl md:text-7xl font-bold mb-6 glitch-text" data-text="HACK THE FUTURE">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 glitch-text" data-text="HACK THE FUTURE">
                 HACK THE FUTURE
               </h2>
               
-              <div className="text-xl mb-8 font-mono">
+              <div className="text-sm sm:text-base md:text-xl mb-6 md:mb-8 font-mono space-y-1 md:space-y-0">
                 <div>{'>'} Master elite cybersecurity skills</div>
                 <div>{'>'} Learn from real-world hackers</div>
                 <div>{'>'} Become the security expert companies need</div>
               </div>
               
-              <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center">
                 <Button 
                   onClick={() => scrollToSection('courses')}
-                  className="bg-green-500 text-black px-8 py-3 font-bold hover:bg-green-400 transition-all transform hover:scale-105 neon-glow"
+                  className="w-full sm:w-auto bg-green-500 text-black px-6 md:px-8 py-3 font-bold hover:bg-green-400 transition-all transform hover:scale-105 neon-glow text-sm md:text-base"
                 >
-                  <Terminal className="w-5 h-5 mr-2" />
+                  <Terminal className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                   START_HACKING.exe
                 </Button>
                 <Button 
                   variant="outline"
-                  className="border-green-500 text-green-500 px-8 py-3 font-bold hover:bg-green-500 hover:text-black transition-all"
+                  className="w-full sm:w-auto border-green-500 text-green-500 px-6 md:px-8 py-3 font-bold hover:bg-green-500 hover:text-black transition-all text-sm md:text-base"
                 >
                   WATCH_DEMO.mp4
                 </Button>
@@ -230,18 +230,18 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="relative z-10 py-20 bg-gray-900">
+      <section id="features" className="relative z-10 py-12 md:py-20 bg-gray-900">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <pre className="text-green-400 text-sm mb-4">
+          <div className="text-center mb-8 md:mb-12">
+            <pre className="text-green-400 text-xs md:text-sm mb-4 overflow-x-auto">
 {`┌─[ PLATFORM_FEATURES.json ]───────────────────────────────┐
 │ "why_choose_us": "elite_training_experience"            │
 └──────────────────────────────────────────────────────────┘`}
             </pre>
-            <h2 className="text-4xl font-bold mb-4 text-green-500">WHY_CHOOSE_CYBERACADEMY.exe</h2>
+            <h2 className="text-2xl md:text-4xl font-bold mb-4 text-green-500">WHY_CHOOSE_CYBERACADEMY.exe</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {[
               {
                 icon: "🛡️",
@@ -285,18 +285,18 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="relative z-10 py-20 bg-black">
+      <section className="relative z-10 py-12 md:py-20 bg-black">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <pre className="text-green-400 text-sm mb-4">
+          <div className="text-center mb-8 md:mb-12">
+            <pre className="text-green-400 text-xs md:text-sm mb-4 overflow-x-auto">
 {`┌─[ TESTIMONIALS.log ]─────────────────────────────────────┐
 │ grep "success_stories" /var/log/student_feedback.txt    │
 └──────────────────────────────────────────────────────────┘`}
             </pre>
-            <h2 className="text-4xl font-bold mb-4 text-green-500">ELITE_TESTIMONIALS.txt</h2>
+            <h2 className="text-2xl md:text-4xl font-bold mb-4 text-green-500">ELITE_TESTIMONIALS.txt</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
             <Card className="terminal-border p-6 bg-gray-900">
               <pre className="text-green-400 text-sm mb-4">
 {`> FROM: ghost_h4cker@protonmail.com
