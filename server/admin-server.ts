@@ -1,5 +1,6 @@
 
 import express from "express";
+// @ts-ignore
 import cors from "cors";
 import { storage } from "./storage";
 import { insertCourseSchema } from "@shared/schema";
@@ -433,8 +434,8 @@ app.delete("/api/courses/:id", authenticateAdmin, async (req, res) => {
   }
 });
 
-const PORT = 3001;
-app.listen(PORT, "0.0.0.0", () => {
+const PORT = 3000;
+app.listen(PORT, () => {
   console.log(`Admin server running on port ${PORT}`);
 });
 
